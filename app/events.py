@@ -46,8 +46,8 @@ def log_loop(last_checked_block, check_interval):
 
     token_addresses = []
 
-    for token in config['TOKENS'][config["CURRENT_ARB_NETWORK"]].keys():
-        token_addresses.append(config['TOKENS'][config["CURRENT_ARB_NETWORK"]][token]['contract_address'])
+    for token in config['TOKENS'][config["CURRENT_XDC_NETWORK"]].keys():
+        token_addresses.append(config['TOKENS'][config["CURRENT_XDC_NETWORK"]][token]['contract_address'])
 
     while True:       
         
@@ -99,7 +99,7 @@ def log_loop(last_checked_block, check_interval):
                     classic_trx_time = time.time()
                     logger.warning(f"Check classic transactions: {batch_get_time - classic_trx_time}")
 
-                for token in config['TOKENS'][config["CURRENT_ARB_NETWORK"]].keys():
+                for token in config['TOKENS'][config["CURRENT_XDC_NETWORK"]].keys():
                     token_instance  = Token(token)
                     transfers = token_instance.get_all_transfers(start_batch_block, last_batch_block)
                     for transaction in transfers:
