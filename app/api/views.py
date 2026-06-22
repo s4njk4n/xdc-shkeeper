@@ -58,7 +58,7 @@ def get_balance():
         inst = Coin(config["COIN_SYMBOL"])
         balance = inst.get_fee_deposit_coin_balance()
     else:
-        if crypto_str in config['TOKENS'][config["CURRENT_ARB_NETWORK"]].keys():
+        if crypto_str in config['TOKENS'][config["CURRENT_XDC_NETWORK"]].keys():
             token_instance = Token(crypto_str)
             balance = token_instance.get_fee_deposit_token_balance()
         else:
@@ -84,7 +84,7 @@ def get_transaction(txid):
             transaction = w3.eth.get_transaction(txid)
             logger.warning(f"Checking transaction {txid}")
             if (transaction['to'] in list_accounts) or (transaction['from'] in list_accounts):
-                logger.warning(f"Found related addresses in {txid}, checking it as a regular ARB transaction")            
+                logger.warning(f"Found related addresses in {txid}, checking it as a regular XDC transaction")            
                 if (transaction['to'] in list_accounts) and (transaction['from'] in list_accounts):
                     address = transaction["from"]
                     category = 'internal'
@@ -108,7 +108,7 @@ def get_transaction(txid):
                     if tr['to'] in list_accounts or tr['from'] in list_accounts:
                         block_eth_tx_addrs.append(tr['to'])
                         block_eth_tx_addrs.append(tr['from'])
-                logger.warning(f"Regular ARB transactions to our addresses in {block_num} block: {block_eth_tx_addrs}")
+                logger.warning(f"Regular XDC transactions to our addresses in {block_num} block: {block_eth_tx_addrs}")
 
                 related_internal_addr = []
 
@@ -117,7 +117,7 @@ def get_transaction(txid):
                         if acc_addr not in block_eth_tx_addrs:
                             related_internal_addr.append(acc_addr)
                         else:
-                            logger.warning(f"Found internal transaction to {acc_addr} but skip it because there was already a regular ARB transaction to {acc_addr} in {block_num} block")
+                            logger.warning(f"Found internal transaction to {acc_addr} but skip it because there was already a regular XDC transaction to {acc_addr} in {block_num} block")
                 
                 if len(related_internal_addr) > 0:
                     logger.warning(f"Found internal transactions to {related_internal_addr}")
@@ -129,12 +129,12 @@ def get_transaction(txid):
                 token_addresses = []
                 addresses_in_another_txs = []
 
-                for token in config['TOKENS'][config["CURRENT_ARB_NETWORK"]].keys():
-                    token_addresses.append(config['TOKENS'][config["CURRENT_ARB_NETWORK"]][token]['contract_address'])
+                for token in config['TOKENS'][config["CURRENT_XDC_NETWORK"]].keys():
+                    token_addresses.append(config['TOKENS'][config["CURRENT_XDC_NETWORK"]][token]['contract_address'])
 
                 logger.warning("Checking block for another internal txs to related addresses")
                 for tr in block.transactions:
-                    if ((len(tr.input) > 6) and # check only txs with input (regular ARB transactions input is '0x')
+                    if ((len(tr.input) > 6) and # check only txs with input (regular XDC transactions input is '0x')
                         (tr['to'] not in token_addresses) and  # do not check internal tx to known token addresses and requested tx
                         tr['hash'].hex() != txid ):
                         for addr in related_internal_addr:
@@ -163,7 +163,7 @@ def get_transaction(txid):
         except Exception as e:
              logger.warning({f'status': 'error', 'msg': str(e)})
              return []
-    elif g.symbol in config['TOKENS'][config["CURRENT_ARB_NETWORK"]].keys():
+    elif g.symbol in config['TOKENS'][config["CURRENT_XDC_NETWORK"]].keys():
         token_instance  = Token(g.symbol)
         try:
             # transfer_abi_args = token_instance.contract._find_matching_event_abi('Transfer')['inputs']
@@ -221,7 +221,7 @@ def get_fee_deposit_account():
         coin_instance = Coin(g.symbol)
         return {'account': coin_instance.get_fee_deposit_account(), 
                     'balance': coin_instance.get_fee_deposit_coin_balance()}
-    elif g.symbol in config['TOKENS'][config["CURRENT_ARB_NETWORK"]].keys():
+    elif g.symbol in config['TOKENS'][config["CURRENT_XDC_NETWORK"]].keys():
         token_instance = Token(g.symbol)
         return {'account': token_instance.get_fee_deposit_account(), 
                 'balance': token_instance.get_fee_deposit_account_balance()}
