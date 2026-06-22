@@ -31,7 +31,7 @@ def make_multipayout(symbol, payout_list, fee):
         payout_results = coint_inst.make_multipayout_eth(payout_list, fee)
         post_payout_results.delay(payout_results, symbol)
         return payout_results    
-    elif symbol in config['TOKENS'][config["CURRENT_ARB_NETWORK"]].keys():
+    elif symbol in config['TOKENS'][config["CURRENT_XDC_NETWORK"]].keys():
         token_inst = Token(symbol)
         payout_results = token_inst.make_token_multipayout(payout_list, fee)
         post_payout_results.delay(payout_results, symbol)
@@ -83,7 +83,7 @@ def refresh_balances():
             
             have_tokens = False
                 
-            for token in config['TOKENS'][config["CURRENT_ARB_NETWORK"]].keys():
+            for token in config['TOKENS'][config["CURRENT_XDC_NETWORK"]].keys():
                 token_instance = Token(token)
                 if Accounts.query.filter_by(address = account, crypto = token).first():
                     pd = Accounts.query.filter_by(address = account, crypto = token).first()
@@ -98,7 +98,7 @@ def refresh_balances():
                     if normalized_balance >= decimal.Decimal(get_min_token_transfer_threshold(token)):
                         have_tokens = copy.deepcopy(token)
                     
-            if have_tokens in config['TOKENS'][config["CURRENT_ARB_NETWORK"]].keys():
+            if have_tokens in config['TOKENS'][config["CURRENT_XDC_NETWORK"]].keys():
                 drain_account.delay(have_tokens, account) 
             else:
                 if acc_balance >= decimal.Decimal(config['MIN_TRANSFER_THRESHOLD']):
@@ -126,7 +126,7 @@ def drain_account(self, symbol, account):
         inst = Coin(symbol)
         destination = inst.get_fee_deposit_account()
         results = inst.drain_account(account, destination)
-    elif symbol in config['TOKENS'][config["CURRENT_ARB_NETWORK"]].keys():
+    elif symbol in config['TOKENS'][config["CURRENT_XDC_NETWORK"]].keys():
         inst = Token(symbol)
         destination = inst.get_fee_deposit_account()
         results = inst.drain_tocken_account(account, destination)
@@ -140,7 +140,7 @@ def drain_account(self, symbol, account):
 @skip_if_running
 def create_fee_deposit_account(self):
     logger.warning(f"Creating fee-deposit account")
-    inst = Coin("ARB")
+    inst = Coin("XDC")
     inst.set_fee_deposit_account()    
     return True
         
