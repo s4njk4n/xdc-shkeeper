@@ -148,7 +148,7 @@ class Coin:
     
         for payout in payout_list:
             if not self.provider.is_address(payout['dest']):
-                raise Exception(f"Address {payout['dest']} is not valid ethereum address") 
+                raise Exception(f"Address {payout['dest']} is not valid address") 
 
         for payout in payout_list:
             if not self.provider.is_checksum_address(payout['dest']):
@@ -219,10 +219,10 @@ class Coin:
         account_balance = Decimal(0)
     
         if not self.provider.is_address(destination):
-            raise Exception(f"Address {destination} is not valid ethereum address") 
+            raise Exception(f"Address {destination} is not valid address") 
     
         if not self.provider.is_address(account):
-            raise Exception(f"Address {account} is not valid ethereum address")  
+            raise Exception(f"Address {account} is not valid address")  
 
         if not self.provider.is_checksum_address(destination):
                 logger.warning(f"Provided address {destination} is not checksum address, converting to checksum address")
@@ -537,7 +537,7 @@ class Token:
         need_tokens = 0 
         for payout in payout_list:
             if not self.provider.is_address(payout['dest']):
-                raise Exception(f"Address {payout['dest']} is not valid ethereum address") 
+                raise Exception(f"Address {payout['dest']} is not valid address") 
             need_tokens = need_tokens + payout['amount']
 
         for payout in payout_list:
@@ -596,9 +596,9 @@ class Token:
         results = []
         
         if not self.check_eth_address(destination):
-            raise Exception(f"Address {destination} is not valid ethereum address")     
+            raise Exception(f"Address {destination} is not valid address")     
         if not self.check_eth_address(account):
-            raise Exception(f"Address {account} is not valid ethereum address")  
+            raise Exception(f"Address {account} is not valid address")  
         if not self.provider.is_checksum_address(destination):
                 logger.warning(f"Provided address {destination} is not checksum address, converting to checksum address")
                 destination = self.provider.to_checksum_address(destination)
@@ -623,7 +623,7 @@ class Token:
             gas_price = self.get_gas_price()
             max_fee_per_gas = ( Decimal(self.provider.from_wei(gas_price, "ether")) + Decimal(fee) ) #* Decimal(config['MULTIPLIER'])
             need_crypto = gas * max_fee_per_gas
-            # if there is not enough ARB for sending tokens
+            # if there is not enough XDC for sending tokens
             logger.warning(f'gas: {str(gas)}\n gas_price: {str(gas_price)}\n need_crypto: {str(need_crypto)}\n balance: {str(Decimal(self.provider.from_wei(self.provider.eth.get_balance(account), "ether"))  )}')
             if Decimal(self.provider.from_wei(self.provider.eth.get_balance(account), "ether")) < need_crypto:            
                 need_to_send = need_crypto - self.provider.from_wei(self.provider.eth.get_balance(account), "ether") 
